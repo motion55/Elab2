@@ -16,7 +16,7 @@ namespace Elab
 {
     public partial class Form1 : Form
     {
-        TcpClient tcpSocket = null;
+        Socket _socket = null;
 
         public Form1()
         {
@@ -25,14 +25,15 @@ namespace Elab
 
         private void Connect_Click(object sender, EventArgs e)
         {
-            if (tcpSocket == null)
+            if (_socket == null)
             {
                 try
                 {
-                    tcpSocket = new TcpClient("192.168.0.123", 23);
+                    _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     ConnectButton.Text = "Disconnect";
                 }
-                catch (Exception ex)              {
+                catch (Exception ex)              
+                {
                     ConnectButton.Text = "Connect";
                     System.Console.WriteLine(ex.Message);
                     string error_text = "Unable to open connection";
@@ -41,19 +42,18 @@ namespace Elab
             }
             else
             {
-                tcpSocket.Close();
-                tcpSocket = null;
+                _socket.Close();
+                _socket = null;
                 ConnectButton.Text = "Connect";
             }
         }
 
         void SendCommand(string text)
         {
-            if (tcpSocket.Connected)
+            if (_socket.Connected)
             {
                 byte[] Buffer = Encoding.ASCII.GetBytes(text);
                 Int32 Count = Encoding.ASCII.GetByteCount(text);
-                tcpSocket.GetStream().WriteAsync(Buffer, 0, Count);
             }
         }
 
